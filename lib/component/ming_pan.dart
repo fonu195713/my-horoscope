@@ -1,10 +1,36 @@
 import '../function/time_convert.dart' show toSolar, toLunar;
 
+List<String> _tianGanList = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+List<String> _diJhihList = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+Map<String, int> _wuXingJuMap = {'木': 3, '火': 6, '土': 5, '金': 4, '水': 2};
+
+List<List<String>> _transTable = [
+  ['廉貞', '破軍', '武曲', '太陽'],
+  ['天機', '天梁', '紫微', '太陰'],
+  ['天同', '天機', '文昌', '廉貞'],
+  ['太陰', '天同', '天機', '巨門'],
+  ['貪狼', '太陰', '右弼', '天機'],
+  ['武曲', '貪狼', '天梁', '文曲'],
+  ['太陽', '武曲', '太陰', '天同'],
+  ['巨門', '太陽', '文曲', '文昌'],
+  ['天梁', '紫微', '左輔', '武曲'],
+  ['破軍', '巨門', '太陰', '貪狼'],
+];
+
 class Star {
+  static late Map<String, dynamic> lunarTime;
   late String name;
   late int level;
+  late Map<String, bool> trans = {};
 
-  Star(this.name, this.level);
+  Star(this.name, this.level) {
+    trans = {
+      'lu': (name == _transTable[lunarTime['tianGan'] - 1][0]),
+      'ch': (name == _transTable[lunarTime['tianGan'] - 1][1]),
+      'ke': (name == _transTable[lunarTime['tianGan'] - 1][2]),
+      'ji': (name == _transTable[lunarTime['tianGan'] - 1][3]),
+    };
+  }
 }
 
 class House {
@@ -12,8 +38,28 @@ class House {
   late List<Star> starList;
   late String tianGan, diJhih;
   late bool isShen;
+  late List<int> daYun;
+  late Map<String, bool> tranSelf, transOopposite;
 
   House(this.diJhih, this.name);
+
+  void setTrans(House house) {
+    tranSelf = {'lu': false, 'ch': false, 'ke': false, 'ji': false};
+    for (Star star in starList) {
+      tranSelf['lu'] = ((tranSelf['lu']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][0]));
+      tranSelf['ch'] = ((tranSelf['ch']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][1]));
+      tranSelf['ke'] = ((tranSelf['ke']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][2]));
+      tranSelf['ji'] = ((tranSelf['ji']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][3]));
+    }
+
+    transOopposite = {'lu': false, 'ch': false, 'ke': false, 'ji': false};
+    for (Star star in house.starList) {
+      transOopposite['lu'] = ((transOopposite['lu']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][0]));
+      transOopposite['ch'] = ((transOopposite['ch']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][1]));
+      transOopposite['ke'] = ((transOopposite['ke']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][2]));
+      transOopposite['ji'] = ((transOopposite['ji']!) || (star.name == _transTable[_tianGanList.indexOf(tianGan)][3]));
+    }
+  }
 }
 
 class Mingpan {
@@ -41,29 +87,22 @@ class Mingpan {
 
     // Do initialization that requires async
     lunarTime = await toLunar(solarTime);
+    Star.lunarTime = lunarTime;
 
-    // create houseList, houseList[0] = 'zi'
     _setHousesName();
-    print('ok 1');
-    // set Shen Gong location
     _setShenGong();
-    print('ok 2');
-    // set 'tian gan'
     _setTianGan();
-    print('ok 3');
-    // set 'wu xing ju'
     _setWuXingJu();
-    print('ok 4');
-    // set 14 major stars
+    _setLuckOfHouse();
     _setMainStars();
-    print('ok 5');
+    _setSecondaryStars();
+    _setHousesSiHua();
 
     // Return the fully initialized object
     return mingPan;
   }
 
   static void _setHousesName() {
-    List<String> diJhih = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
     List<String> name = ['命', '兄', '夫', '子', '財', '疾', '遷', '奴', '官', '田', '福', '父'];
 
     List<List<String>> ziName = [
@@ -85,7 +124,7 @@ class Mingpan {
 
     houseList = [];
     for (int i = 0; i < 12; i++) {
-      houseList.add(House(diJhih[i], name[index]));
+      houseList.add(House(_diJhihList[i], name[index]));
       index = (index == 0) ? 11 : index - 1;
     }
   }
@@ -114,28 +153,25 @@ class Mingpan {
 
   static void _setTianGan() {
     List<List<String>> tianGan = [
+      ['甲', '乙', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
       ['丙', '丁', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸', '甲', '乙'],
       ['戊', '己', '戊', '己', '庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁'],
       ['庚', '辛', '庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己'],
       ['壬', '癸', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛'],
-      ['甲', '乙', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
     ];
 
-    int y = lunarTime['tianGan'] - 1;
+    int y = lunarTime['tianGan'] % 5;
     for (int i = 0; i < 12; i++) {
       houseList[i].tianGan = tianGan[y][i];
     }
   }
 
   static void _setWuXingJu() {
-    List<String> tianGan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-    List<String> diJhih = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-
     int tgIndex = 0, djIndex = 0;
     for (House house in houseList) {
       if (house.name == '命') {
-        tgIndex = (tianGan.indexOf(house.tianGan) / 2).floor();
-        djIndex = (diJhih.indexOf(house.diJhih) / 2).floor();
+        tgIndex = (_tianGanList.indexOf(house.tianGan) / 2).floor();
+        djIndex = (_diJhihList.indexOf(house.diJhih) / 2).floor();
         break;
       }
     }
@@ -151,22 +187,45 @@ class Mingpan {
     wuXingJu = wuXingJuList[tgIndex][djIndex];
   }
 
+  static void _setLuckOfHouse() {
+    int index = 0;
+    for (House house in houseList) {
+      if (house.name == '命') {
+        index = _diJhihList.indexOf(house.diJhih);
+        break;
+      }
+    }
+
+    bool clockwise = isBoy && lunarTime['tianGan'] % 2 == 1;
+    clockwise = clockwise || (!isBoy && lunarTime['tianGan'] % 2 == 0);
+
+    for (int i = 0; i < 12; i++) {
+      houseList[index].daYun = [];
+      houseList[index].daYun.add(_wuXingJuMap[wuXingJu[2]]! + i * 10 + 0);
+      houseList[index].daYun.add(_wuXingJuMap[wuXingJu[2]]! + i * 10 + 9);
+
+      if (clockwise) {
+        index = (index == 11) ? 0 : index + 1;
+      } else {
+        index = (index == 0) ? 11 : index - 1;
+      }
+    }
+  }
+
   static void _setMainStars() {
-    List<String> diJhih = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-    List<String> wuXing = ['木', '火', '土', '金', '水'];
-    List<List<String>> ziWeiLocation = [
-      ['辰', '丑', '寅', '巳', '寅', '卯', '午', '卯', '辰', '未', '辰', '巳', '申', '巳', '午', '酉', '午', '未', '戌', '未', '申', '亥', '申', '酉', '子', '酉', '戌', '丑', '戌', '亥'],
-      ['酉', '午', '亥', '辰', '丑', '寅', '戌', '未', '子', '巳', '寅', '卯', '亥', '申', '丑', '午', '卯', '辰', '子', '酉', '寅', '未', '辰', '巳', '丑', '戌', '卯', '申', '巳', '午'],
-      ['午', '亥', '辰', '丑', '寅', '未', '子', '巳', '寅', '卯', '申', '丑', '午', '卯', '辰', '酉', '寅', '未', '辰', '巳', '戌', '卯', '申', '巳', '午', '亥', '辰', '酉', '午', '未'],
-      ['亥', '辰', '丑', '寅', '子', '巳', '寅', '卯', '丑', '午', '卯', '辰', '寅', '未', '辰', '巳', '卯', '申', '巳', '午', '辰', '酉', '午', '未', '巳', '戌', '未', '申', '午', '亥'],
-      ['丑', '寅', '寅', '卯', '卯', '辰', '辰', '巳', '巳', '午', '午', '未', '未', '申', '申', '酉', '酉', '戌', '戌', '亥', '亥', '子', '子', '丑', '丑', '寅', '寅', '卯', '卯', '辰'],
-    ];
+    Map<String, List<String>> ziWeiLocation = {
+      '木': ['辰', '丑', '寅', '巳', '寅', '卯', '午', '卯', '辰', '未', '辰', '巳', '申', '巳', '午', '酉', '午', '未', '戌', '未', '申', '亥', '申', '酉', '子', '酉', '戌', '丑', '戌', '亥'],
+      '火': ['酉', '午', '亥', '辰', '丑', '寅', '戌', '未', '子', '巳', '寅', '卯', '亥', '申', '丑', '午', '卯', '辰', '子', '酉', '寅', '未', '辰', '巳', '丑', '戌', '卯', '申', '巳', '午'],
+      '土': ['午', '亥', '辰', '丑', '寅', '未', '子', '巳', '寅', '卯', '申', '丑', '午', '卯', '辰', '酉', '寅', '未', '辰', '巳', '戌', '卯', '申', '巳', '午', '亥', '辰', '酉', '午', '未'],
+      '金': ['亥', '辰', '丑', '寅', '子', '巳', '寅', '卯', '丑', '午', '卯', '辰', '寅', '未', '辰', '巳', '卯', '申', '巳', '午', '辰', '酉', '午', '未', '巳', '戌', '未', '申', '午', '亥'],
+      '水': ['丑', '寅', '寅', '卯', '卯', '辰', '辰', '巳', '巳', '午', '午', '未', '未', '申', '申', '酉', '酉', '戌', '戌', '亥', '亥', '子', '子', '丑', '丑', '寅', '寅', '卯', '卯', '辰'],
+    };
 
     for (House house in houseList) {
       house.starList = [];
     }
 
-    int ziweiIndex = diJhih.indexOf(ziWeiLocation[wuXing.indexOf(wuXingJu[2])][lunarTime['day'] - 1]);
+    int ziweiIndex = _diJhihList.indexOf(ziWeiLocation[wuXingJu[2]]![lunarTime['day'] - 1]);
 
     int starIndex = ziweiIndex;
     houseList[starIndex].starList.add(Star('紫微', 1));
@@ -199,6 +258,75 @@ class Mingpan {
     houseList[starIndex].starList.add(Star('破軍', 1));
   }
 
+  static void _setSecondaryStars() {
+    List<dynamic> location = [];
+    int starIndex = -1;
+
+    location = ['戌', '酉', '申', '未', '午', '巳', '辰', '卯', '寅', '丑', '子', '亥'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['hour'] - 1]);
+    houseList[starIndex].starList.add(Star('文昌', 2));
+
+    location = ['辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑', '寅', '卯'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['hour'] - 1]);
+    houseList[starIndex].starList.add(Star('文曲', 2));
+
+    location = ['辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑', '寅', '卯'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['month'] - 1]);
+    houseList[starIndex].starList.add(Star('左輔', 2));
+
+    location = ['戌', '酉', '申', '未', '午', '巳', '辰', '卯', '寅', '丑', '子', '亥'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['month'] - 1]);
+    houseList[starIndex].starList.add(Star('右弼', 2));
+
+    location = ['丑', '子', '亥', '亥', '丑', '子', '丑', '午', '卯', '卯'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['tianGan'] - 1]);
+    houseList[starIndex].starList.add(Star('天魁', 2));
+
+    location = ['未', '申', '酉', '酉', '未', '申', '未', '寅', '巳', '巳'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['tianGan'] - 1]);
+    houseList[starIndex].starList.add(Star('天鉞', 2));
+
+    location = ['卯', '辰', '午', '未', '午', '未', '酉', '戌', '子', '丑'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['tianGan'] - 1]);
+    houseList[starIndex].starList.add(Star('擎羊', 3));
+
+    location = ['丑', '寅', '辰', '巳', '辰', '巳', '未', '申', '戌', '亥'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['tianGan'] - 1]);
+    houseList[starIndex].starList.add(Star('陀羅', 3));
+
+    location = [
+      ['酉', '戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申'],
+      ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'],
+      ['卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑', '寅'],
+      ['丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子'],
+    ];
+    starIndex = _diJhihList.indexOf(location[lunarTime['diJhih'] % 4][lunarTime['hour'] - 1]);
+    houseList[starIndex].starList.add(Star('火星', 3));
+
+    location = [
+      ['戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉'],
+      ['戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉'],
+      ['戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉'],
+      ['卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑', '寅'],
+    ];
+    starIndex = _diJhihList.indexOf(location[lunarTime['diJhih'] % 4][lunarTime['hour'] - 1]);
+    houseList[starIndex].starList.add(Star('鈴星', 3));
+
+    location = ['亥', '戌', '酉', '申', '未', '午', '巳', '辰', '卯', '寅', '丑', '子'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['hour'] - 1]);
+    houseList[starIndex].starList.add(Star('地空', 3));
+
+    location = ['亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌'];
+    starIndex = _diJhihList.indexOf(location[lunarTime['hour'] - 1]);
+    houseList[starIndex].starList.add(Star('地劫', 3));
+  }
+
+  static void _setHousesSiHua() {
+    for (int i = 0; i < 12; i++) {
+      houseList[i].setTrans(houseList[(i + 6) % 12]);
+    }
+  }
+
   void showAll() {
     Map<String, dynamic> m = {
       'name': name,
@@ -210,10 +338,49 @@ class Mingpan {
     print(m.toString());
 
     for (House house in houseList) {
+      print('----------------------');
       print('{${house.name}, ${house.tianGan}${house.diJhih}}${(house.isShen) ? '(身)' : ''}');
+      print('${house.daYun[0]} ~ ${house.daYun[1]}');
+      house.tranSelf.forEach((key, value) {
+        Map<String, String> m = {
+          'lu': '祿',
+          'ch': '權',
+          'ke': '科',
+          'ji': '忌',
+        };
+
+        if (value) {
+          print('自化${m[key]}');
+        }
+      });
+
+      house.transOopposite.forEach((key, value) {
+        Map<String, String> m = {
+          'lu': '祿',
+          'ch': '權',
+          'ke': '科',
+          'ji': '忌',
+        };
+
+        if (value) {
+          print('射出${m[key]}');
+        }
+      });
       for (Star star in house.starList) {
-        print(star.name);
+        if (star.trans['lu'] ?? false) {
+          print('${star.name}[祿]');
+        } else if (star.trans['ch'] ?? false) {
+          print('${star.name}[權]');
+        } else if (star.trans['ke'] ?? false) {
+          print('${star.name}[科]');
+        } else if (star.trans['ji'] ?? false) {
+          print('${star.name}[忌]');
+        } else {
+          print(star.name);
+        }
       }
+
+      print('\n');
     }
   }
 }
@@ -224,6 +391,7 @@ ref:
   https://stackoverflow.com/questions/38933801/calling-an-async-method-from-component-constructor-in-dart
 
   > zi wei innitial setting
+  https://www.youtube.com/watch?v=rpm2dhhEdyk&list=PLFkjU2k58dB6djoiA20u6Xce-eTaZpuSm
   https://timoyang.pixnet.net/blog/post/462674150
   http://www.freehoro.net/ZWDS/Tutorial/PaiPan/6-0_WuXingGu_NaYin.php
 
