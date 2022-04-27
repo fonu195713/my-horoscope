@@ -12,8 +12,9 @@ enum Gender { boy, girl }
 
 class _BirthdayInputPageState extends State<BirthdayInputPage> {
   String name = '';
-  Gender? gender = Gender.boy;
   DateTime birthday = DateTime.now();
+  String text = DateTime.now().toString();
+  Gender? gender = Gender.boy;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +56,7 @@ class _BirthdayInputPageState extends State<BirthdayInputPage> {
               showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1901), lastDate: DateTime(2100)).then((dt) {
                 dt = dt ?? DateTime.now();
                 birthday = DateTime(dt.year, dt.month, dt.day, birthday.hour, birthday.minute);
+                setState(() => text = birthday.toString());
               });
             },
             child: const Text('y-m-d'),
@@ -64,10 +66,12 @@ class _BirthdayInputPageState extends State<BirthdayInputPage> {
               showTimePicker(context: context, initialTime: TimeOfDay.now()).then((tod) {
                 tod = tod ?? TimeOfDay.now();
                 birthday = DateTime(birthday.year, birthday.month, birthday.day, tod.hour, tod.minute);
+                setState(() => text = birthday.toString());
               });
             },
             child: const Text('h-m'),
           ),
+          Text(text),
           OutlinedButton(
             child: const Text('Register'),
             onPressed: () {
@@ -84,7 +88,6 @@ class _BirthdayInputPageState extends State<BirthdayInputPage> {
     );
   }
 }
-
 
 /* ***
 ref:
