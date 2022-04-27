@@ -20,7 +20,7 @@ class _FramePageState extends State<FramePage> {
     super.initState();
     _selectedIndex = 0;
     pageList = [
-      ZiweiPage(info: widget.info.toString()),
+      ZiweiPage(info: widget.info),
       BaziPage(info: widget.info.toString()),
       HoroscopePage(info: widget.info.toString()),
     ];
