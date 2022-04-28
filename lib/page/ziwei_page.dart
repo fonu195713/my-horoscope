@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../component/ming_pan.dart';
+import '../component/palaces.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 import '../function/to_string.dart' show lunarToString;
 
