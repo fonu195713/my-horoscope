@@ -96,7 +96,7 @@ class Mingpan {
     _setLuckOfHouse();
     _setMainStars();
     _setSecondaryStars();
-    _setHousesSiHua();
+    _setHousestranSelf();
 
     // Return the fully initialized object
     return mingPan;
@@ -321,7 +321,7 @@ class Mingpan {
     houseList[starIndex].starList.add(Star('地劫', 3));
   }
 
-  static void _setHousesSiHua() {
+  static void _setHousestranSelf() {
     for (int i = 0; i < 12; i++) {
       houseList[i].setTrans(houseList[(i + 6) % 12]);
     }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../component/pillars.dart';
 import 'package:spannable_grid/spannable_grid.dart';
-import '../function/to_string.dart' show sexagenaryCycleToString;
 
 class BaziPage extends StatelessWidget {
   final Map<String, dynamic> info;
@@ -21,14 +20,69 @@ class BaziPage extends StatelessWidget {
                 return SnapshotHasError(text: 'Error: ${snapshot.error}');
               }
 
-              return Center(child: Text(sexagenaryCycleToString(Bazi.words)));
-            // return SpannableGrid(
-            //   columns: 4,
-            //   rows: 4,
-            //   cells: const[],
-            // );
+              return Center(
+                  child: SpannableGrid(
+                columns: 4,
+                rows: 3,
+                cells: _generateWholeCells(),
+              ));
           }
         });
+  }
+
+  List<SpannableGridCellData> _generateWholeCells() {
+    List<SpannableGridCellData> cells = [];
+    for (int i = 0; i < 8; i++) {
+      cells.add(SpannableGridCellData(
+        column: 4 - (i / 2).floor(),
+        row: (i % 2 == 0) ? 1 : 2,
+        id: i,
+        child: _genetateCellInfo(Bazi.words[i]),
+      ));
+    }
+
+    return cells;
+  }
+
+  Widget _genetateCellInfo(String word) {
+    List<Color> wordColor = const [
+      Color.fromRGBO(25, 131, 25, 1),
+      Color.fromRGBO(245, 10, 15, 1),
+      Color.fromRGBO(155, 125, 90, 1),
+      Color.fromRGBO(245, 135, 35, 1),
+      Color.fromRGBO(20, 20, 230, 1),
+    ];
+
+    int wordIndexInTianGan = -1;
+    if (word == '甲' || word == '乙' || word == '寅' || word == '卯') {
+      wordIndexInTianGan = 0;
+    } else if (word == '丙' || word == '丁' || word == '巳' || word == '午') {
+      wordIndexInTianGan = 1;
+    } else if (word == '戊' || word == '己' || word == '辰' || word == '戌' || word == '丑' || word == '未') {
+      wordIndexInTianGan = 2;
+    } else if (word == '庚' || word == '辛' || word == '申' || word == '酉') {
+      wordIndexInTianGan = 3;
+    } else if (word == '壬' || word == '癸' || word == '亥' || word == '子') {
+      wordIndexInTianGan = 4;
+    }
+
+    return Container(
+      margin: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.all(5.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[500]!),
+        borderRadius: BorderRadius.circular(3.0),
+      ),
+      child: Center(
+          child: Text(
+        word,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 40,
+          color: wordColor[wordIndexInTianGan],
+        ),
+      )),
+    );
   }
 }
 
