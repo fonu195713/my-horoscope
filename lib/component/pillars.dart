@@ -1,4 +1,7 @@
 import '../function/time_convert.dart' show toSolar, toSexagenaryCycle;
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert' show json;
+import '../function/time_convert.dart' show toDateTime;
 
 class Bazi {
   static late String name;
@@ -8,6 +11,7 @@ class Bazi {
   static late List<String> words;
   static late String mainWord;
   static late Map<String, String> tenLords;
+  static late DateTime luckStart;
 
   // Private constructor
   Bazi._create(Map<String, dynamic> info) {
@@ -28,6 +32,7 @@ class Bazi {
     mainWord = words[4];
 
     _setTenLords();
+    await _countLuckStart();
 
     // Return the fully initialized object
     return bazi;
@@ -48,5 +53,44 @@ class Bazi {
     ];
 
     tenLords = lordsTable[['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'].indexOf(mainWord)];
+  }
+
+  static Future<void> _countLuckStart() async {
+    String jsonText = await rootBundle.loadString('lib/json/solar_term.json');
+    Map<String, dynamic> cycle = json.decode(jsonText);
+
+    List<dynamic> solarTermsData = [];
+    solarTermsData = List.from(solarTermsData)..addAll(cycle['y${solarTime.year - 1}']);
+    solarTermsData = List.from(solarTermsData)..addAll(cycle['y${solarTime.year + 0}']);
+    solarTermsData = List.from(solarTermsData)..addAll(cycle['y${solarTime.year + 1}']);
+
+    DateTime lastSolarTerm = DateTime.now();
+    DateTime nextSolarTerm = DateTime.now();
+
+    for (int i = 0; i < solarTermsData.length; i++) {
+      if (!toDateTime(solarTermsData[i]).isAfter(solarTime) && toDateTime(solarTermsData[i + 1]).isAfter(solarTime)) {
+        lastSolarTerm = toDateTime(solarTermsData[i + 0]);
+        nextSolarTerm = toDateTime(solarTermsData[i + 1]);
+        break;
+      }
+    }
+    print(lastSolarTerm);
+    print(nextSolarTerm);
+
+    List<String> tianGan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+    bool clockwise = false;
+    clockwise = (tianGan.indexOf(words[0]) % 2 == 0) && isBoy;
+    clockwise = clockwise || ((tianGan.indexOf(words[0]) % 2 == 1) && !isBoy);
+    print(clockwise);
+
+    if (clockwise) {
+      int h = nextSolarTerm.difference(solarTime).inMinutes * 2;
+      luckStart = solarTime.add(Duration(hours: h));
+    } else {
+      int h = solarTime.difference(lastSolarTerm).inMinutes * 2;
+      luckStart = solarTime.add(Duration(hours: h));
+    }
+
+    print(luckStart);
   }
 }

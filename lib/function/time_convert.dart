@@ -1,7 +1,7 @@
 import 'dart:math' show pi, sin, cos;
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
+import 'dart:convert' show json;
 
 DateTime toSolar(DateTime clock) {
   DateTime jan1 = DateTime(clock.year, 1, 1, 0, 0);
@@ -111,7 +111,9 @@ Future<List<String>> toSexagenaryCycle(DateTime birthday) async {
   return bazi;
 }
 
-DateTime toDateTime(List<int> list) {
+DateTime toDateTime(List<dynamic> ld) {
+  List<int> list = List<int>.from(ld);
+
   if (list.length == 3) {
     return DateTime(list[0], list[1], list[2], 0, 0);
   } else {

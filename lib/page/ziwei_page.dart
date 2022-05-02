@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../component/palaces.dart';
 import 'package:spannable_grid/spannable_grid.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import '../function/to_string.dart' show lunarToString;
 
 class ZiweiPage extends StatelessWidget {
@@ -85,8 +86,8 @@ class ZiweiPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('${Mingpan.name},   五行局:${Mingpan.wuXingJu}'),
-            Text('鐘錶時間: ${Mingpan.clockTime}'),
-            Text('太陽時間: ${Mingpan.solarTime}'),
+            Text('鐘錶時間: ${DateFormat('yyyy-MM-dd, kk:mm').format(Mingpan.clockTime)}'),
+            Text('太陽時間: ${DateFormat('yyyy-MM-dd, kk:mm').format(Mingpan.solarTime)}'),
             Text('農曆生日: ${lunarToString(Mingpan.lunarTime)}'),
           ],
         )));

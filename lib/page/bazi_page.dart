@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import '../component/pillars.dart';
 import 'package:spannable_grid/spannable_grid.dart';
@@ -20,12 +22,19 @@ class BaziPage extends StatelessWidget {
                 return SnapshotHasError(text: 'Error: ${snapshot.error}');
               }
 
-              return Center(
-                  child: SpannableGrid(
-                columns: 4,
-                rows: 3,
-                cells: _generateWholeCells(),
-              ));
+              return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Row(children: [
+                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('時柱'))),
+                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('日柱'))),
+                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('月柱'))),
+                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('年柱'))),
+                ]),
+                SpannableGrid(
+                  columns: 4,
+                  rows: 2,
+                  cells: _generateWholeCells(),
+                )
+              ]);
           }
         });
   }
@@ -33,18 +42,19 @@ class BaziPage extends StatelessWidget {
   List<SpannableGridCellData> _generateWholeCells() {
     List<SpannableGridCellData> cells = [];
     for (int i = 0; i < 8; i++) {
+      bool main = (i == 4);
       cells.add(SpannableGridCellData(
         column: 4 - (i / 2).floor(),
         row: (i % 2 == 0) ? 1 : 2,
         id: i,
-        child: _genetateCellInfo(Bazi.words[i]),
+        child: _genetateCellInfo(Bazi.words[i], main),
       ));
     }
 
     return cells;
   }
 
-  Widget _genetateCellInfo(String word) {
+  Widget _genetateCellInfo(String word, bool main) {
     List<Color> wordColor = const [
       Color.fromRGBO(25, 131, 25, 1),
       Color.fromRGBO(245, 10, 15, 1),
@@ -71,7 +81,7 @@ class BaziPage extends StatelessWidget {
       padding: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[500]!),
-        borderRadius: BorderRadius.circular(3.0),
+        borderRadius: BorderRadius.circular((main) ? 999 : 10),
       ),
       child: Center(
           child: Text(
