@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../component/ming_pan.dart';
+import '../component/palaces.dart';
 import 'package:spannable_grid/spannable_grid.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import '../function/to_string.dart' show lunarToString;
 
 class ZiweiPage extends StatelessWidget {
@@ -24,29 +25,55 @@ class ZiweiPage extends StatelessWidget {
               return SpannableGrid(
                 columns: 4,
                 rows: 4,
-                cells: generateWholeCells(),
+                cells: _generateWholeCells(),
               );
           }
         });
   }
 
-  List<SpannableGridCellData> generateWholeCells() {
-    Map<String, int> row = {'子': 4, '丑': 4, '寅': 4, '卯': 3, '辰': 2, '巳': 1, '午': 1, '未': 1, '申': 1, '酉': 2, '戌': 3, '亥': 4};
-    Map<String, int> col = {'子': 3, '丑': 2, '寅': 1, '卯': 1, '辰': 1, '巳': 1, '午': 2, '未': 3, '申': 4, '酉': 4, '戌': 4, '亥': 4};
+  List<SpannableGridCellData> _generateWholeCells() {
+    Map<String, int> row = {
+      '子': 4,
+      '丑': 4,
+      '寅': 4,
+      '卯': 3,
+      '辰': 2,
+      '巳': 1,
+      '午': 1,
+      '未': 1,
+      '申': 1,
+      '酉': 2,
+      '戌': 3,
+      '亥': 4
+    };
+    Map<String, int> col = {
+      '子': 3,
+      '丑': 2,
+      '寅': 1,
+      '卯': 1,
+      '辰': 1,
+      '巳': 1,
+      '午': 2,
+      '未': 3,
+      '申': 4,
+      '酉': 4,
+      '戌': 4,
+      '亥': 4
+    };
     List<SpannableGridCellData> cells = [];
-    cells.add(generateMiddleInfo());
+    cells.add(_generateMiddleInfo());
     for (House house in Mingpan.houseList) {
       cells.add(SpannableGridCellData(
         column: col[house.diJhih]!,
         row: row[house.diJhih]!,
         id: house.diJhih,
-        child: genetateCell(house),
+        child: _genetateCellInfo(house),
       ));
     }
     return cells;
   }
 
-  SpannableGridCellData generateMiddleInfo() {
+  SpannableGridCellData _generateMiddleInfo() {
     return SpannableGridCellData(
         id: Mingpan.name,
         column: 2,
@@ -59,14 +86,14 @@ class ZiweiPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('${Mingpan.name},   五行局:${Mingpan.wuXingJu}'),
-            Text('鐘錶時間: ${Mingpan.clockTime}'),
-            Text('太陽時間: ${Mingpan.solarTime}'),
+            Text('鐘錶時間: ${DateFormat('yyyy-MM-dd, kk:mm').format(Mingpan.clockTime)}'),
+            Text('太陽時間: ${DateFormat('yyyy-MM-dd, kk:mm').format(Mingpan.solarTime)}'),
             Text('農曆生日: ${lunarToString(Mingpan.lunarTime)}'),
           ],
         )));
   }
 
-  Widget genetateCell(House house) {
+  Widget _genetateCellInfo(House house) {
     List<TextStyle> starColor = const [
       TextStyle(color: Color.fromRGBO(205, 60, 60, 1)),
       TextStyle(color: Color.fromRGBO(150, 50, 150, 1)),

@@ -6,7 +6,9 @@ class HoroscopePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text(info));
+    // info = {name: 匿名, isBoy: true, birthday: 2022-05-05 12:51:00.000}
+
+    return const Center(child: Text('To be continue ...'));
   }
 }
 

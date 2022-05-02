@@ -21,7 +21,7 @@ class _FramePageState extends State<FramePage> {
     _selectedIndex = 0;
     pageList = [
       ZiweiPage(info: widget.info),
-      BaziPage(info: widget.info.toString()),
+      BaziPage(info: widget.info),
       HoroscopePage(info: widget.info.toString()),
     ];
   }

@@ -96,7 +96,7 @@ class Mingpan {
     _setLuckOfHouse();
     _setMainStars();
     _setSecondaryStars();
-    _setHousesSiHua();
+    _setHousestranSelf();
 
     // Return the fully initialized object
     return mingPan;
@@ -321,66 +321,9 @@ class Mingpan {
     houseList[starIndex].starList.add(Star('地劫', 3));
   }
 
-  static void _setHousesSiHua() {
+  static void _setHousestranSelf() {
     for (int i = 0; i < 12; i++) {
       houseList[i].setTrans(houseList[(i + 6) % 12]);
-    }
-  }
-
-  void showAll() {
-    Map<String, dynamic> m = {
-      'name': name,
-      'isBoy': isBoy,
-      'clockTime': clockTime,
-      'solarTime': solarTime,
-      'lunarTime': lunarTime,
-    };
-    print(m.toString());
-
-    for (House house in houseList) {
-      print('----------------------');
-      print('{${house.name}, ${house.tianGan}${house.diJhih}}${(house.isShen) ? '(身)' : ''}');
-      print('${house.daYun[0]} ~ ${house.daYun[1]}');
-      house.tranSelf.forEach((key, value) {
-        Map<String, String> m = {
-          'lu': '祿',
-          'ch': '權',
-          'ke': '科',
-          'ji': '忌',
-        };
-
-        if (value) {
-          print('自化${m[key]}');
-        }
-      });
-
-      house.transOopposite.forEach((key, value) {
-        Map<String, String> m = {
-          'lu': '祿',
-          'ch': '權',
-          'ke': '科',
-          'ji': '忌',
-        };
-
-        if (value) {
-          print('射出${m[key]}');
-        }
-      });
-      for (Star star in house.starList) {
-        if (star.trans['lu'] ?? false) {
-          print('${star.name}[祿]');
-        } else if (star.trans['ch'] ?? false) {
-          print('${star.name}[權]');
-        } else if (star.trans['ke'] ?? false) {
-          print('${star.name}[科]');
-        } else if (star.trans['ji'] ?? false) {
-          print('${star.name}[忌]');
-        } else {
-          print(star.name);
-        }
-      }
-
-      print('\n');
     }
   }
 }
