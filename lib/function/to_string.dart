@@ -28,3 +28,13 @@ String lunarToString(Map<String, dynamic> lunar) {
 
   return result;
 }
+
+String sexagenaryCycleToString(List<String> bazi) {
+  String result = '';
+  List<String> list = ['', '年 ', '', '月 ', '', '日 ', '', '時'];
+  for (int i = 0; i < bazi.length; i++) {
+    result += bazi[i] + list[i];
+    result += (i % 2 == 1 && i != 7) ? ' ' : '';
+  }
+  return result;
+}
