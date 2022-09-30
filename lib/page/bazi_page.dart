@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import '../component/pillars.dart';
 import 'package:spannable_grid/spannable_grid.dart';
@@ -22,19 +20,33 @@ class BaziPage extends StatelessWidget {
                 return SnapshotHasError(text: 'Error: ${snapshot.error}');
               }
 
-              return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Row(children: [
-                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('時柱'))),
-                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('日柱'))),
-                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('月柱'))),
-                  Expanded(child: Container(alignment: Alignment.bottomCenter, child: const Text('年柱'))),
-                ]),
-                SpannableGrid(
-                  columns: 4,
-                  rows: 2,
-                  cells: _generateWholeCells(),
-                )
-              ]);
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(children: [
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.bottomCenter,
+                              child: const Text('時柱'))),
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.bottomCenter,
+                              child: const Text('日柱'))),
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.bottomCenter,
+                              child: const Text('月柱'))),
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.bottomCenter,
+                              child: const Text('年柱'))),
+                    ]),
+                    SpannableGrid(
+                      columns: 4,
+                      rows: 2,
+                      cells: _generateWholeCells(),
+                    )
+                  ]);
           }
         });
   }
@@ -68,7 +80,12 @@ class BaziPage extends StatelessWidget {
       wordIndexInTianGan = 0;
     } else if (word == '丙' || word == '丁' || word == '巳' || word == '午') {
       wordIndexInTianGan = 1;
-    } else if (word == '戊' || word == '己' || word == '辰' || word == '戌' || word == '丑' || word == '未') {
+    } else if (word == '戊' ||
+        word == '己' ||
+        word == '辰' ||
+        word == '戌' ||
+        word == '丑' ||
+        word == '未') {
       wordIndexInTianGan = 2;
     } else if (word == '庚' || word == '辛' || word == '申' || word == '酉') {
       wordIndexInTianGan = 3;

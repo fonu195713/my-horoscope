@@ -30,8 +30,7 @@ Future<Map<String, dynamic>> toLunar(DateTime birthday) async {
     jan1 = toDateTime(list);
   }
 
-  int year = (birthday.isBefore(jan1)) ? birthday.year - 1 : birthday.year;
-
+  int year = jan1.year;
   bool leap = false;
   int month = 0;
   int day = 0;
@@ -63,7 +62,20 @@ Future<Map<String, dynamic>> toLunar(DateTime birthday) async {
 
 Future<List<String>> toSexagenaryCycle(DateTime birthday) async {
   List<String> tgList = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-  List<String> djList = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  List<String> djList = [
+    '子',
+    '丑',
+    '寅',
+    '卯',
+    '辰',
+    '巳',
+    '午',
+    '未',
+    '申',
+    '酉',
+    '戌',
+    '亥'
+  ];
 
   String jsonText = await rootBundle.loadString('lib/json/solar_term.json');
   Map<String, dynamic> cycle = json.decode(jsonText);
