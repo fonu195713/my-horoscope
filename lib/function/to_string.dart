@@ -8,9 +8,9 @@ String lunarToString(Map<String, dynamic> lunar) {
 
   result += '${tianGan[lunar['tianGan']]}${diJhih[lunar['diJhih']]}年 ';
 
-  result += '${month[lunar['month']]}月 ';
+  result += lunar['leap'] ? '閏' : '';
 
-  result += lunar['leap'] ? '潤' : '';
+  result += '${month[lunar['month']]}月 ';
 
   if (lunar['day'] <= 10) {
     result += '初${day[lunar['day']]} ';
